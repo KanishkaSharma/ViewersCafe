@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Viewer's Cafe | A Video Cafe</title>
+    <%= csrf_meta_tags %>
+    <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
+    <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link href="/assets/select2-materialize.css" type="text/css" rel="stylesheet" >
+  </head>
+
+  <body>
+    <!-- Start Header  -->
+   
+  	<header id="header" class="page-topbar">
+  		<div class="navbar-fixed"> 
+			<nav class="navbar-color">
+    			<div class="nav-wrapper">
+    			<ul class="left">
+    				<li> 
+	    				<h4 class="logo-wrapper" style="padding-left: 15px;z-index: 999" >
+	    					<%= link_to "Viewer's Cafe" ,root_url ,class: "brand-logo darken-1 logo-text" %>
+	    				</h4>
+		      		</li> 
+		      	</ul>
+		      	<div class="row center header-search-wrapper hide-on-med-and-down" data-constrainwidth="false" style="padding-left: 250px; width:70% ; margin-left:2% ;z-index= 999">
+                  <%= form_tag search_videos_path , method: "get" do %>
+                    <div class="input-field col s10 center">
+                      <%= text_field_tag :search,nil, class: "header-search-input", placeholder: "Explore Videos", autocomplete: :off ,type:" search" %>
+                      <label class="label-icon" for="search"></label>
+                    </div>
+                    <div class="col s1">
+                        <%= submit_tag "SEARCH" ,class: "btn" ,style: "margin-bottom:10px" %>
+                   </div>
+                   <% end %>
+                </div>
+		      <!-- Desktop Screens NavBAr -->
+		      <ul class="right hide-on-med-and-down">
+		      	<li>
+		      		<a href="javascript:void(0)" class="waves-effect waves-block waves-light translation-button" data-activates="search-dropdown" data-costrainwidth="false"></a>
+		      	</li>
+                <li>
+                	<a href="javascript:void(0);" class="waves-effect waves-block waves-light translation-button"  data-activates="translation-dropdown" data-constrainwidth="false">
+                		<%= image_tag("flag-icons/United-States.png", alt: "USA", style: "height:60px;padding-bottom:20px;padding-top:5px")%>
+                	</a>
+                </li>
+                <li>
+                	<a href="javascript:void(0);" class="waves-effect waves-block waves-light toggle-fullscreen" onclick="toggleFullScreen()">
+                			<i class="large material-icons" >fullscreen</i>	
+	                </a>
+                </li>
+                <li>
+                	<a href="javascript:void(0);" class="waves-effect waves-block waves-light notification-button" data-activates="notifications-dropdown" data-constrainwidth="false">
+      						<i class="large material-icons">notifications</i>	
+	                </a>
+                </li>                        
+                <li>
+                    <%if user_signed_in?%>
+                        <%= link_to raw("<i class=\"large material-icons\" style=\"color:white;\" >settings_power</i>") , destroy_user_session_path ,class: " waves-effect waves-block waves-light" 
+                        %>
+                    <% else %>
+                        <%= link_to raw("<i class=\"large material-icons\" style=\"color:black;\" >settings_power</i>") , user_session_path ,class: " waves-effect waves-block waves-light" 
+                        %>
+                    <%end%>
+                </li>
+              </ul>
+                 <!-- translation-button -->
+              <ul id="translation-dropdown" class="dropdown-content">
+	              <li>
+	                <a href="#!"><%= image_tag("flag-icons/United-States.png", alt: "English", style: "height:40px")%><span class="language-select">&nbsp;English</span></a>
+	              </li>
+	              <li>
+	                <a href="#!"><%= image_tag("flag-icons/France.png", alt: "French", style: "height:40px")%><span class="language-select">&nbsp;French</span></a>
+	              </li>
+	              <li>
+	                <a href="#!"><%= image_tag("flag-icons/China.png", alt: "Chinese", style: "height:40px")%> <span class="language-select">&nbsp;Chinese</span></a>
+	              </li>
+	              <li>
+	                <a href="#!"><%= image_tag("flag-icons/Germany.png", alt: "German", style: "height:40px")%>  <span class="language-select">&nbsp;German</span></a>
+	              </li>
+               </ul>
+                   <!-- notifications-dropdown -->
+                <ul  id="notifications-dropdown" class="dropdown-content">
+                  <%if user_signed_in? %>
+                  <li>
+                    <h5>NOTIFICATIONS<span class="new badge"><%= @notification.count %></span></h5>
+                  </li>
+                  <li class="divider"></li>
+                    <%for i in @notification%>
+                      <li>
+                        <a href="#!"><i class="mdi-action-trending-up"></i><%= "#{User.find(i.user_id).first_name} #{i.action} You!"%></a>
+                      </li>
+                      <%end%>
+                  <%end%>
+                </ul>
+                </div>
+            </nav>
+        </div>
+        <!-- end header nav-->
+    </header>
+    <!-- END HEADER -->
+	 <!-- START MAIN -->
+    <div id="main">
+        <!-- START WRAPPER -->
+        <div class="wrapper">
+            <!-- START LEFT SIDEBAR NAV-->
+            <aside id="left-sidebar-nav">
+                <ul id="slide-out" class="side-nav fixed leftside-navigation leftnav">
+                    <li class="user-details cyan darken-2">
+                        <div class="row">
+                            <div class="col col s3 m3 l3" style="margin-bottom: 10%;padding-top: 10%">
+                                <%if user_signed_in? %>
+                                    <%= image_tag current_user.profile_picture ,alt: "" ,class: "circle responsive-img valign profile-image" %>
+                                <%else%>
+                                   <%= image_tag "avatar.jpg" ,alt: "" ,class: "circle responsive-img valign profile-image" %>
+                                <%end%>
+                                <br>                
+                            </div>
+                            <div class="col col s9 m9 l19" style="margin-bottom: 10%;padding-top: 8%">
+                                <p class="waves-effect waves-light white-text" style="font-size: 13.5px" >
+                                    <% if user_signed_in? %> 
+                                        <%= [current_user.first_name,current_user.last_name].join(" ") %>
+                                        <%= current_user.email %>
+                                    <%else%> 
+                                        <%= "Guest User" %> 
+                                    <% end %>
+                                </p>    
+                            </div>
+                        </div>
+                    </li>
+                    <li class="bold active">
+                        <%= link_to "Home" , root_url %>
+                    </li>
+                    <%if user_signed_in?%>
+                      <li class="bold"> 
+                          <%= link_to "My Liked Videos" , liked_videos_path %>
+                      </li>
+                      <li class="bold"> 
+                          <%= link_to "My Dislked Videos" , disliked_videos_path %>
+                      </li>
+                      <li class="bold"> 
+                          <%= link_to "Upload Videos" , new_video_path %>
+                      </li>
+                      <li class="bold"> 
+                          <%= link_to "Edit & View Uploaded Videos" , myvideo_videos_path %>
+                      </li>
+                    <%end%>
+                    <li class="li-hover"><div class="divider"></div></li>
+                    <li class="li-hover"><p class="ultra-small margin more-text">Most Viewed Tag</p></li>
+                    <%  for i in $mostTags %>
+                      <li>
+                        <a href="angular-ui.html"><i class="mdi-action-verified-user"></i>
+                          <%= "#{i.name}"%></a>
+                      </li>
+                    <%end%>
+                    <li>
+                        <br>
+                        <br>
+                    </li>
+                    <li>
+                        <div class="footer-copyright">
+                            <div class="container">
+                               <a href="#">
+                                    Contact US
+                               </a>
+                               <br> 
+                                © 2014 Copyright Text
+                                <br>
+                                &nbsp;
+                            </div>
+                        </div>
+                        <br>
+                    </li>
+                </ul>
+                <a href="#" data-activates="slide-out" class="side-collapse btn-floating btn-medium waves-effect waves-light hide-on-large-only">
+                    <i class="material-icons">menu</i>
+                </a>
+            </aside>
+            <!-- END LEFT SIDEBAR NAV-->
+            <!-- //////////////////////////////////////////////////////////////////////////// -->
+  			<section id="content">
+  				<div class="container" style="width: 80%">
+  				  <%=yield%>
+  				</div>
+  			</section>
+        <style type="text/css">
+          input[type="text"]::-webkit-input-placeholder{ /* Chrome/Opera/Safari */
+              color: blue;
+          }
+          input[type="text"]::-moz-placeholder { /* Firefox 19+ */
+            color: blue;
+          }
+          input[type="text"]:-ms-input-placeholder { /* IE 10+ */
+            color: blue;
+          }
+          input[type="text"]:-moz-placeholder { /* Firefox 18- */
+            color: blue;
+          }
+        </style>
+  	        <script type="text/javascript">
+  		    $(function(){"use strict";
+            function a(a)
+            {
+            $(a).is(":checked")?$(a).next().css("text-decoration","line-through"):$(a).next().css("text-decoration","none")}
+            function c(){try{return document.createEvent("TouchEvent"),!0}catch(a){return!1}};
+            var d=$(window).width();
+            $(window).load(function(){setTimeout(function(){$("body").addClass("loaded")},200)});
+            $(".header-search-input").focus(function(){$(this).parent("div").addClass("header-search-wrapper-focus")}).blur(function(){$(this).parent("div").removeClass("header-search-wrapper-focus")});
+            $(".dropdown-button").dropdown({
+                inDuration:300,
+                outDuration:125,
+                constrain_width:false,
+                hover:!1,
+                alignment:"left",
+                gutter:0,
+                belowOrigin:!0
+            });
+            $(".translation-button").dropdown({
+                inDuration:300,
+                outDuration:225,
+                constrain_width:false,
+                hover:!0,gutter:0,
+                belowOrigin:!0,
+                alignment:"left"
+            });
+            $(".notification-button").dropdown({
+                inDuration:300,
+                outDuration:225,
+                constrain_width:false,
+                hover:!0,
+                gutter:0,
+                belowOrigin:!0,
+                alignment:"right"
+            });
+           $(".dropdown-menu").dropdown({
+                inDuration:300,
+                outDuration:225,
+                constrain_width:false,
+                hover:!0,
+                gutter:0,
+                belowOrigin:!0
+            });
+           var f=$(".page-topbar").height(),g=window.innerHeight-f;
+           $(".leftside-navigation").height(g).perfectScrollbar({suppressScrollX:!0});
+           $(".rightside-navigation").perfectScrollbar({suppressScrollX:!0});
+           $("nav").length?$(".toc-wrapper").pushpin({top:$("nav").height()}):$("#index-banner").length?$(".toc-wrapper").pushpin({top:$("#index-banner").height()}):$(".toc-wrapper").pushpin({top:0});
+           var i=$("#flow-toggle");
+           i.click(function(){$("#flow-text-demo").children("p").each(function(){$(this).toggleClass("flow-text")})});
+           $("#card-alert .close").click(function(){$(this).closest("#card-alert").fadeOut("slow")});
+           var j=$("#container-toggle-button");
+           j.click(function(){$("body .browser-window .container, .had-container").each(function(){
+            $(this).toggleClass("had-container");
+            $(this).toggleClass("container");
+            $(this).hasClass("container")?j.text("Turn off Containers"):j.text("Turn on Containers")})}),c()&&$("#nav-mobile").css({overflow:"auto"}),"undefined"!=typeof Chartist&&new Chartist.Line("#ct2-chart",{labels:[1,2,3,4,5,6,7,8],series:[[5,9,7,8,5,3,5,4]]},{low:0,showArea:!0}),480>=d&&$("#trending-line-chart").attr({height:"200"})});
+            $('.side-collapse').sideNav({
+                menuWidth: 290, // Default is 300
+                edge: 'left', // Choose the horizontal origin
+                closeOnClick: true, // Closes side-nav on <a> clicks, useful for Angular/Meteor
+                draggable: true, // Choose whether you can drag to open on touch screens,
+                });
+          	 function toggleFullScreen() {
+                if ((document.fullScreenElement && document.fullScreenElement !== null) ||    
+                   (!document.mozFullScreen && !document.webkitIsFullScreen)) {
+                    if (document.documentElement.requestFullScreen) {  
+                      document.documentElement.requestFullScreen();  
+                    } else if (document.documentElement.mozRequestFullScreen) {  
+                      document.documentElement.mozRequestFullScreen();  
+                    } else if (document.documentElement.webkitRequestFullScreen) {  
+                      document.documentElement.webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);  
+                    }  
+                  } else {  
+                    if (document.cancelFullScreen) {  
+                      document.cancelFullScreen();  
+                    } else if (document.mozCancelFullScreen) {  
+                      document.mozCancelFullScreen();  
+                    } else if (document.webkitCancelFullScreen) {  
+                      document.webkitCancelFullScreen();  
+                    }  
+                  }  
+                }
+  	        </script>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,84 @@
+<br>
+<% if @video.preview_images[0].nil? %>
+    <video class="responsive-video" controls style="width:100%" onclick="viewed();" id="display" onload="myFunction()" poster=<%="#{@video.movie.thumb}"%>>
+      <source src=<%= @video.movie %> >
+  </video>
+<% else %>
+  <video class="responsive-video" controls style="width:100%" onclick="viewed();" id="display" onload="myFunction()" poster=<%="#{@video.preview_images[0]}"%> >
+      <source src=<%= @video.movie %>  >
+  </video>
+<% end %>
+<div class="row">
+  <div class="col">
+    <br>
+    <% if user_signed_in? %>  
+      <%if @like %>
+        <%= link_to raw("<i class=\"material-icons\" style=\"color:blue\">thumb_up</i>"),"#",class: "btn-floating btn-small waves-effect waves-light red" ,remote: true %>
+      <% else %>
+        <%= link_to raw("<i class=\"material-icons\" >thumb_up</i>"),like_index_path,class: "btn-floating btn-small waves-effect waves-light red" ,method:"post",remote: true%>
+      <% end %>
+    <% else %>
+      <%= link_to raw("<i class=\"material-icons\">thumb_up</i>"),"#",class: "btn-floating btn-small waves-effect waves-light red" ,remote: true%>
+    <% end %>&nbsp;<%= number_to_human(@likes)%> likes &nbsp;
+    <%if user_signed_in?%>
+        <%if @dislike %>
+          <%= link_to raw("<i class=\"material-icons\" style=\"color:blue\" >thumb_down</i>"),"#",class: "btn-floating btn-small waves-effect waves-light red" ,remote:true %>
+        <% elsif  %>
+          <%= link_to raw("<i class=\"material-icons\">thumb_down</i>"),dislike_index_path,class: "btn-floating btn-small waves-effect waves-light red",method:"post",remote: true %>
+        <%end%>
+    <%else%>
+      <%= link_to raw("<i class=\"material-icons\" >thumb_down</i>"),"#",class: "btn-floating btn-small waves-effect waves-light red",remote: true %>
+    <%end%>
+    &nbsp;<%= number_to_human(@dislikes) %> dislikes
+  </div>
+  <div class="col">
+    <br>
+    <%if user_signed_in? %>  
+      <%if @subscribed %>
+        <%= link_to raw("<i class=\"material-icons\" style=\"color:blue\" >notifications</i>"),subscription_path,class: "btn-floating btn-small waves-effect waves-light red",remote: true, method: "Delete" %>
+      <%else%>
+        <%= link_to raw("<i class=\"material-icons\" >notifications</i>"),subscription_index_path,class: "btn-floating btn-small waves-effect waves-light red",remote: true,method: "post" %>
+      <%end%>
+    <% else %>
+      <%= link_to raw("<i class=\"material-icons\" >notifications</i>"),"#",class: "btn-floating btn-small waves-effect waves-light red" %>
+    <% end %>
+  </div>
+  <div class="col right">
+    <br>
+    <h5 align="right"><%= number_to_human(@video.count) %>  views</h5>
+  </div>
+</div>
+<p>
+  <strong>Tags:</strong>
+  <% for i in @video.tags %>
+    @<%=i.name %>
+  <%end %>
+</p>
+
+<p>
+  <strong>Title:</strong>
+  <%= @video.title %>
+</p>
+
+<p>
+  <strong>Description:</strong>
+  <%= @video.description %>
+</p>
+
+<p>
+  <strong>Uploader:</strong>
+  <%= [@video.uploader.first_name,@video.uploader.last_name].join(" ") %>
+</p>
+<%= render 'comment'%>
+<script type="text/javascript">
+  function viewed(){
+    <% c = Video.find(params[:id]) 
+        b= c.count%>
+    <% if b.nil? 
+        b = 0 
+      end%>
+    <% b = b+1 %>
+    <% c.count = b %>
+    <% c.save%>
+  }
+</script>

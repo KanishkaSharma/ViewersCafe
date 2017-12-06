@@ -1,0 +1,22 @@
+<p id="notice"><%= notice %></p>
+  <div class="row">
+    <%@result.each do |video| %>
+    <div class="col s8 m4">   
+      <div class="card">
+        <%= link_to raw("
+          <div class=\"card-image waves-effect waves-block waves-light\">
+             #{image_tag(video.preview_images[0])}
+          </div>
+          <div class=\"card-content\">
+            <span class=\"card-title activator grey-text text-darken-4\" style=\" font-size : 15px \">
+              <div  style=\"width:100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis\">
+              #{ video.title}
+              </div>
+            </span>
+            More Details
+          </div>
+        ") , video %>
+        </div>
+        </div>
+    <% end %>
+  </div>

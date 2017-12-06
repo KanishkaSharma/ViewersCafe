@@ -1,0 +1,61 @@
+<h2>COMMENTS</h2>
+<hr>
+<ul class="collapsible" data-collapsible="accordion">
+<% @comments.each do |comment| %>
+    <li>
+      <div class="collapsible-header" style="height:10%;">
+      	<%= image_tag User.find(comment.commentor_id).profile_picture ,class: "circle" %>
+      	<br>
+      	&nbsp;&nbsp;
+      	<%= [User.find(comment.commentor_id).first_name,User.find(comment.commentor_id).last_name].join(" ")%>
+      	<br>
+      	&nbsp;&nbsp;
+      	<%= comment.body%>
+      <i class="material-icons medium">reply</i>      
+      </div>
+      <div class="collapsible-body">
+      	<span>
+      		<ul class="collection">
+		    <% comment.replies.each do |reply| %>
+			    <li class="collection-item avatar">
+			      		<%= image_tag User.find(reply.commentor_id).profile_picture ,class: "circle" %>
+			      <span class="title"><%= [User.find(reply.commentor_id).first_name,User.find(reply.commentor_id).last_name].join(" ")%></span>
+			      <p>
+			      	<%= reply.body%><br>
+			      </p>
+			    </li>
+			   <% end %>
+  			 <%if user_signed_in? %>  
+           <%= form_with(model: @comment) do |f| %>
+  			  	<div class="input-field">
+  			  	  <%= f.hidden_field :comments_id , value: comment.id%>
+  			  	  <%= f.text_field :body, label: false,placeholder: "Add a Reply" %>
+  			  	</div>
+  			  	<div class="form-actions">
+  			   	  <%= f.button :submit ,value: "Reply" %>
+  			  	</div>
+  			  <%end %>		
+      	<%end%>
+        </span>
+      </div>
+    </li>
+    <% end %>
+  </ul>
+ 
+<%if user_signed_in?%>
+  <%= form_with(model: @comment) do |f| %>
+    	<div class="form-inputs">
+    	  <%= f.text_field :body, label: false ,placeholder: "Add a Comment" %>
+    	</div>
+    	<div class="form-actions">
+     	  <%= f.button :submit, value: "Comment" %>
+    	</div>
+   <%end %>
+ <% end %>
+ <script>
+  $('.collapsible').collapsible({
+    accordion: true, // A setting that changes the collapsible behavior to expandable instead of the default accordion style
+    onOpen: function(el) {  }, // Callback for Collapsible open
+    onClose: function(el) {  } // Callback for Collapsible close
+  });
+</script>

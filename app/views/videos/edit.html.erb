@@ -1,0 +1,59 @@
+<h1>Editing Video</h1>
+<%= simple_form_for(@video) do |form| %>
+<div class="form-inputs"> 
+    <%= form.hidden_field :tag_name, value: raw(@tag_name) ,id: :tag_name%>
+    <%= form.input :title, id: :video_title %>
+    <div class="row">
+        <div class="input-field col s12">
+          <textarea id="textarea1" name="video[description]" class="materialize-textarea"></textarea>
+      <label for="textarea1">Description</label>
+        </div>
+    </div>
+    <label for="spaceTags">Tags</label>
+    <div id="spaceTags" class="chips chips-placeholder">
+    </div>
+    <p>
+      <input type="checkbox" name=video[published] id="test5" />
+      <label for="test5">Publish Video</label>
+    </p>
+  <div class="form-actions">
+    <%= form.submit%>
+  </div>
+<% end %>
+<script type="text/javascript">
+  $('#textarea1').trigger('autoresize');
+  $('.chips').material_chip();
+  $('.chips-placeholder').material_chip({
+    placeholder: 'Enter a tag',
+    secondaryPlaceholder: '+Tag',
+    autocompleteOptions: {
+      data: <%= raw(@taghashj) %>,
+      limit: Infinity,
+      minLength: 1
+    },
+    data: [
+      <% for i in @savedTag%>
+          {
+            tag:'<%= "#{i}"%>' ,
+          },        
+      <%end%>
+    ]
+  });
+  $('.chips').on('chip.add', function(e, chip){
+    var b = document.getElementById("tag_name").value
+    b = b +","+ chip["tag"];
+    document.getElementById("tag_name").value = b;
+  });
+  $('.chips').on('chip.delete', function(e, chip){
+    var b = chip["tag"]
+    var c = document.getElementById("tag_name").value;
+    var length = c.length;
+    var a = c.indexOf(b);
+    b = c.substr(0,a) + c.substr(a + b.length+1,length)
+    document.getElementById("tag_name").value = b;
+  });
+</script>
+<%= link_to 'Show', @video %> | <%= link_to 'Back', videos_path %>
+<script>
+	document.getElementById("textarea1").value = "<%= @video.description %>";
+</script>

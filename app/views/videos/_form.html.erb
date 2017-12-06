@@ -1,0 +1,53 @@
+<%= simple_form_for(@video,remote: true) do |form| %>
+  <% if video.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(video.errors.count, "error") %> prohibited this video from being saved:</h2>
+      <ul>
+      <% video.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+<div class="form-inputs"> 
+    <%= form.hidden_field :tag_name, value: "" ,id: :tag_name%>
+    <%= form.input :title, id: :video_title %>
+    <div class="row">
+        <div class="input-field col s12">
+          <textarea id="textarea1" name="video[description]" class="materialize-textarea"></textarea>
+      <label for="textarea1">Description</label>
+        </div>
+    </div>
+    <label for="spaceTags">Tags</label>
+    <div id="spaceTags" class="chips chips-placeholder">
+    </div>
+    <%= form.label :movie %>
+    <%= form.file_field :movie %>
+    <%= form.label :preview_images%>
+    <%= form.file_field :preview_images, multiple: true %>
+    <p>
+      <input type="checkbox" name=video[published] id="test5" />
+      <label for="test5">Publish Video</label>
+    </p>
+  <div class="form-actions">
+    <%= form.submit%>
+  </div>
+<% end %>
+<script type="text/javascript">
+  $('#textarea1').trigger('autoresize');
+  $('.chips').material_chip();
+  $('.chips-placeholder').material_chip({
+    placeholder: 'Enter a tag',
+    secondaryPlaceholder: '+Tag',
+    autocompleteOptions: {
+      data:  <%=raw(@taghashj)%>,
+      limit: Infinity,
+      minLength: 1
+    }
+  });
+  $('.chips').on('chip.add', function(e, chip){
+    var b = document.getElementById("tag_name").value
+    b = b +","+ chip["tag"];
+    document.getElementById("tag_name").value = b;
+    });
+</script>
